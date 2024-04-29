@@ -17,6 +17,9 @@ public class Payment {
     @Id
     private UUID id;
 
+    @Column(name = "payment_type", nullable = false)
+    private String paymentType;
+
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
 
