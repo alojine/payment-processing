@@ -1,6 +1,6 @@
 package com.ba.paymentprocessing.controller;
 
-import com.ba.paymentprocessing.domain.DTO.PaymentRequestDTO;
+import com.ba.paymentprocessing.dto.PaymentRequestDTO;
 import com.ba.paymentprocessing.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

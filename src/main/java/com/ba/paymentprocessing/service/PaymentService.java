@@ -1,8 +1,8 @@
 package com.ba.paymentprocessing.service;
 
-import com.ba.paymentprocessing.domain.DTO.PaymentByIdResponseDto;
-import com.ba.paymentprocessing.domain.DTO.PaymentRequestDTO;
-import com.ba.paymentprocessing.domain.model.Payment;
+import com.ba.paymentprocessing.dto.PaymentByIdResponseDto;
+import com.ba.paymentprocessing.dto.PaymentRequestDTO;
+import com.ba.paymentprocessing.model.Payment;
 import com.ba.paymentprocessing.exception.ResourceNotFoundException;
 import com.ba.paymentprocessing.repository.PaymentRepository;
 import com.ba.paymentprocessing.type.Currency;

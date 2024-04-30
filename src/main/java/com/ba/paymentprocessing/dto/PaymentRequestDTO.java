@@ -1,4 +1,4 @@
-package com.ba.paymentprocessing.domain.DTO;
+package com.ba.paymentprocessing.dto;
 import java.math.BigDecimal;
 
 public record PaymentRequestDTO(

@@ -1,4 +1,4 @@
-package com.ba.paymentprocessing.domain.model;
+package com.ba.paymentprocessing.model;
 
 import com.ba.paymentprocessing.type.Currency;
 import com.ba.paymentprocessing.type.PaymentType;
