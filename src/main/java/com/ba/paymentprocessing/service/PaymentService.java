@@ -22,26 +22,27 @@ public class PaymentService {
 
         Payment payment = new Payment();
 //        implement logging service
+        payment.setPaymentType(PaymentType.toEnum(paymentRequestDTO.paymentType()));
         payment.setAmount(paymentRequestDTO.amount());
         payment.setDebtOrIban(paymentRequestDTO.debtOrIban());
         payment.setCreditOrIban(paymentRequestDTO.creditOrIban());
 
-        if (paymentRequestDTO.paymentType() == PaymentType.TYPE1) {
-            if (paymentRequestDTO.currency() != Currency.EUR) {
+        if (payment.getPaymentType() == PaymentType.TYPE1) {
+            payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
+            if (payment.getCurrency() != Currency.EUR) {
                 throw new IllegalArgumentException("must be eur");
             }
-            payment.setCurrency(paymentRequestDTO.currency());
             payment.setDetails(paymentRequestDTO.details());
-
-        } else if (paymentRequestDTO.paymentType() == PaymentType.TYPE2) {
-            if (paymentRequestDTO.currency() != Currency.USD) {
+        } else if (payment.getPaymentType() == PaymentType.TYPE2) {
+            payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
+            if (payment.getCurrency() != Currency.USD) {
                 throw new IllegalArgumentException("must be usd");
             }
-            payment.setCurrency(paymentRequestDTO.currency());
             if (paymentRequestDTO.details() != null)
                 payment.setDetails(paymentRequestDTO.details());
 
-        } else if (paymentRequestDTO.paymentType() == PaymentType.TYPE3) {
+        } else if (payment.getPaymentType() == PaymentType.TYPE3) {
+            payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
             payment.setBicCode(paymentRequestDTO.bicCode());
         }
 
