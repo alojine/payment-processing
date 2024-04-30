@@ -1,5 +1,6 @@
 package com.ba.paymentprocessing.domain.model;
 
+import com.ba.paymentprocessing.type.Currency;
 import com.ba.paymentprocessing.type.PaymentType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -8,7 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Currency;
 import java.util.UUID;
 
 @Data

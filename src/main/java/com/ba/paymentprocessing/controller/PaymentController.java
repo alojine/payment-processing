@@ -1,6 +1,8 @@
 package com.ba.paymentprocessing.controller;
 
 import com.ba.paymentprocessing.domain.DTO.PaymentRequestDTO;
+import com.ba.paymentprocessing.service.PaymentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +15,15 @@ import java.util.UUID;
 @RestController
 @RequestMapping("api/v1/payments")
 public class PaymentController {
+    private final PaymentService paymentService;
+
+    @Autowired
+    public PaymentController(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
+
     @GetMapping
     public ResponseEntity<List<UUID>> getFilteredPayments(
-            @RequestParam(required = false) Boolean areCanceled,
             @RequestParam(required = false) BigDecimal lowerBound,
             @RequestParam(required = false) BigDecimal upperBound
     ) {
@@ -32,6 +40,7 @@ public class PaymentController {
 
     @PostMapping
     public ResponseEntity<HttpStatus> createPayment(@RequestBody PaymentRequestDTO paymentRequestDTO) {
+        paymentService.createPayment(paymentRequestDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
