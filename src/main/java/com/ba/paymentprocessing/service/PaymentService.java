@@ -1,12 +1,17 @@
 package com.ba.paymentprocessing.service;
 
+import com.ba.paymentprocessing.domain.DTO.PaymentByIdResponseDto;
 import com.ba.paymentprocessing.domain.DTO.PaymentRequestDTO;
 import com.ba.paymentprocessing.domain.model.Payment;
+import com.ba.paymentprocessing.exception.ResourceNotFoundException;
 import com.ba.paymentprocessing.repository.PaymentRepository;
 import com.ba.paymentprocessing.type.Currency;
 import com.ba.paymentprocessing.type.PaymentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.UUID;
 
 @Service
 public class PaymentService {
@@ -16,6 +21,16 @@ public class PaymentService {
     @Autowired
     public PaymentService(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
+    }
+
+    public PaymentByIdResponseDto getPaymentById(UUID id) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Payment with Id: %s does not exist", id)));
+
+        return new PaymentByIdResponseDto(
+                payment.getId(),
+                BigDecimal.ONE
+        );
     }
 
     public Payment createPayment(PaymentRequestDTO paymentRequestDTO) {
