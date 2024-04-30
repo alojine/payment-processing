@@ -1,5 +1,6 @@
 package com.ba.paymentprocessing.domain.model;
 
+import com.ba.paymentprocessing.type.PaymentType;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -18,7 +19,7 @@ public class Payment {
     private UUID id;
 
     @Column(name = "payment_type", nullable = false)
-    private String paymentType;
+    private PaymentType paymentType;
 
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;

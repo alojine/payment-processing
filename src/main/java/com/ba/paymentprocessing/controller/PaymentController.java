@@ -15,7 +15,7 @@ import java.util.UUID;
 public class PaymentController {
     @GetMapping
     public ResponseEntity<List<UUID>> getFilteredPayments(
-            @RequestParam(required = false) boolean areCanceled,
+            @RequestParam(required = false) Boolean areCanceled,
             @RequestParam(required = false) BigDecimal lowerBound,
             @RequestParam(required = false) BigDecimal upperBound
     ) {
@@ -25,7 +25,7 @@ public class PaymentController {
         return new ResponseEntity<>(payments, HttpStatus.OK);
     }
 
-    @GetMapping("/${id}")
+    @GetMapping("/{id}")
     public ResponseEntity<HttpStatus> getPaymentById(@PathVariable UUID id) {
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -35,7 +35,7 @@ public class PaymentController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/${id}")
+    @PutMapping("/{id}")
     public ResponseEntity<HttpStatus> cancelPayment(@PathVariable UUID id) {
         return new ResponseEntity<>(HttpStatus.OK);
     }
