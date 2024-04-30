@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
-
 @Service
 public class PaymentService {
 
@@ -22,6 +22,17 @@ public class PaymentService {
     @Autowired
     public PaymentService(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
+    }
+
+    public List<UUID> getNotCanceledFilteredPayments(BigDecimal lowerBound, BigDecimal upperBound) {
+        List<Payment> payments = paymentRepository.findAll();
+
+        return payments.stream()
+                .filter(payment -> !payment.isCanceled() &&
+                        (lowerBound == null || payment.getAmount().compareTo(lowerBound) >= 0) &&
+                        (upperBound== null || payment.getAmount().compareTo(upperBound) <= 0))
+                .map(Payment::getId)
+                .toList();
     }
 
     public PaymentByIdResponseDto getPaymentById(UUID id) {

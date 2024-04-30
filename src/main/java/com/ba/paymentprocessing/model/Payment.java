@@ -39,8 +39,11 @@ public class Payment {
     @Column(name = "bic_code")
     private String bicCode;
 
-    // status?
-    // fees?
+    @Column(name = "is_canceled")
+    private boolean isCanceled;
+
+    @Column(name = "cancellation_fee")
+    private BigDecimal cancellationFee;
 
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
