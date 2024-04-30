@@ -27,7 +27,7 @@ public class PaymentController {
             @RequestParam(required = false) BigDecimal lowerBound,
             @RequestParam(required = false) BigDecimal upperBound
     ) {
-        return new ResponseEntity<>(paymentService.getNotCanceledFilteredPayments(lowerBound, upperBound), HttpStatus.OK);
+        return new ResponseEntity<>(paymentService.getFilteredPayments(lowerBound, upperBound), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -43,6 +43,7 @@ public class PaymentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<HttpStatus> cancelPayment(@PathVariable UUID id) {
+        paymentService.cancelPayment(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
