@@ -3,9 +3,9 @@ package com.ba.paymentprocessing.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.NOT_FOUND)
-public class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException(String message) {
+@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+public class RequestValidationException extends RuntimeException{
+    public RequestValidationException(String message) {
         super(message);
     }
 }

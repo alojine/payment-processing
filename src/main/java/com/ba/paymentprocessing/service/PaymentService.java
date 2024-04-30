@@ -2,6 +2,7 @@ package com.ba.paymentprocessing.service;
 
 import com.ba.paymentprocessing.dto.PaymentByIdResponseDto;
 import com.ba.paymentprocessing.dto.PaymentRequestDTO;
+import com.ba.paymentprocessing.exception.RequestValidationException;
 import com.ba.paymentprocessing.model.Payment;
 import com.ba.paymentprocessing.exception.ResourceNotFoundException;
 import com.ba.paymentprocessing.repository.PaymentRepository;
@@ -45,13 +46,13 @@ public class PaymentService {
         if (payment.getPaymentType() == PaymentType.TYPE1) {
             payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
             if (payment.getCurrency() != Currency.EUR) {
-                throw new IllegalArgumentException("must be eur");
+                throw new RequestValidationException("TYPE1 payment only supports EUR currency");
             }
             payment.setDetails(paymentRequestDTO.details());
         } else if (payment.getPaymentType() == PaymentType.TYPE2) {
             payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
             if (payment.getCurrency() != Currency.USD) {
-                throw new IllegalArgumentException("must be usd");
+                throw new RequestValidationException("TYPE2 payment only supports USD currency");
             }
             if (paymentRequestDTO.details() != null)
                 payment.setDetails(paymentRequestDTO.details());
