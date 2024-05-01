@@ -4,6 +4,8 @@ import com.ba.paymentprocessing.dto.PaymentRequestDTO;
 import com.ba.paymentprocessing.exception.RequestValidationException;
 import com.ba.paymentprocessing.model.Payment;
 import com.ba.paymentprocessing.type.Currency;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,7 @@ import java.math.BigDecimal;
 @Service
 @Qualifier("type1PaymentProcessor")
 public class Type1PaymentProcessor implements PaymentProcessor {
+    private final Logger logger = LoggerFactory.getLogger(Type1PaymentProcessor.class);
     @Override
     public Payment validate(Payment payment, PaymentRequestDTO paymentRequestDTO) {
         if (Currency.toEnum(paymentRequestDTO.currency()) != Currency.EUR)
@@ -22,6 +25,7 @@ public class Type1PaymentProcessor implements PaymentProcessor {
             throw new RequestValidationException("TYPE1 payment must have details field");
         payment.setDetails(paymentRequestDTO.details());
 
+        logger.info("Payment has been validated as TYPE1 payment.");
         return payment;
     }
 

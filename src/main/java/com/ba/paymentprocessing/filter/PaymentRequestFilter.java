@@ -1,8 +1,7 @@
-package com.ba.paymentprocessing.service;
+package com.ba.paymentprocessing.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
@@ -26,10 +25,10 @@ public class PaymentRequestFilter implements Filter {
 
         StringBuilder logMessage = new StringBuilder();
         logMessage.append("Client IP: ").append(clientIp).append(", Method: ").append(method).append(", URI: ").append(requestURI);
-
-        if (method.equalsIgnoreCase("POST")) {
-            logMessage.append(", Request Body: ").append(IOUtils.toString(servletRequest.getInputStream()));
-        }
+//      needs a wrapper. stream cant be opened twice. and tomcat already opened
+//        if (method.equalsIgnoreCase("POST")) {
+//            logMessage.append(", Request Body: ").append(IOUtils.toString(servletRequest.getInputStream()));
+//        }
 
         logger.info(logMessage.toString());
 

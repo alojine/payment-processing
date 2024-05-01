@@ -8,6 +8,8 @@ import com.ba.paymentprocessing.exception.ResourceNotFoundException;
 import com.ba.paymentprocessing.repository.PaymentRepository;
 import com.ba.paymentprocessing.service.paymentstrategy.PaymentProcessor;
 import com.ba.paymentprocessing.type.PaymentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ public class PaymentService {
     private final PaymentProcessor type1PaymentProcessor;
     private final PaymentProcessor type2PaymentProcessor;
     private final PaymentProcessor type3PaymentProcessor;
+
+    private final Logger logger = LoggerFactory.getLogger(PaymentService.class);
 
     @Autowired
     public PaymentService(PaymentRepository paymentRepository,
@@ -60,11 +64,11 @@ public class PaymentService {
         );
     }
 
-    public Payment createPayment(PaymentRequestDTO paymentRequestDTO) {
+    public void createPayment(PaymentRequestDTO paymentRequestDTO) {
 
         Payment payment = new Payment();
         PaymentProcessor paymentProcessor;
-//        implement logging service
+        logger.info("Payment creation process has started");
 
         if (paymentRequestDTO.paymentType() == null || paymentRequestDTO.amount() == null ||
         paymentRequestDTO.currency() == null || paymentRequestDTO.debtOrIban() == null || paymentRequestDTO.creditOrIban() == null)
@@ -83,9 +87,10 @@ public class PaymentService {
         } else {
             paymentProcessor = type3PaymentProcessor;
         }
-        payment = paymentProcessor.validate(payment, paymentRequestDTO);
 
-        return paymentRepository.save(payment);
+        payment = paymentProcessor.validate(payment, paymentRequestDTO);
+        paymentRepository.save(payment);
+        logger.info("Payment creation process has finished.");
     }
 
     public void cancelPayment(UUID id) {
@@ -93,6 +98,7 @@ public class PaymentService {
         LocalDateTime currentDateTime = LocalDateTime.now();
         Payment payment = getById(id);
         LocalDateTime paymentCreationDateTime = payment.getCreatedAt().toLocalDateTime();
+        logger.info("Payment cancellation process has started");
 
         if (payment.isCanceled()) throw new RequestValidationException(String.format("The payment with Id: %s is already cancelled.", id));
 
@@ -109,6 +115,7 @@ public class PaymentService {
             payment.setCancellationFee(paymentProcessor.calculateCancellationFee(duration));
             payment.setCanceled(true);
             paymentRepository.save(payment);
+            logger.info("Payment cancellation process has finished");
         } else throw new RequestValidationException("Payment can only be cancelled on the same day it was created.");
     }
 }

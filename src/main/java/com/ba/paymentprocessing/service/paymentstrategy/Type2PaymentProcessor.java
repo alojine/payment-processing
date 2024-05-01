@@ -4,6 +4,8 @@ import com.ba.paymentprocessing.dto.PaymentRequestDTO;
 import com.ba.paymentprocessing.exception.RequestValidationException;
 import com.ba.paymentprocessing.model.Payment;
 import com.ba.paymentprocessing.type.Currency;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,7 @@ import java.math.BigDecimal;
 @Service
 @Qualifier("type2PaymentProcessor")
 public class Type2PaymentProcessor implements PaymentProcessor{
+    private final Logger logger = LoggerFactory.getLogger(Type2PaymentProcessor.class);
 
     @Override
     public Payment validate(Payment payment, PaymentRequestDTO paymentRequestDTO) {
@@ -22,8 +25,10 @@ public class Type2PaymentProcessor implements PaymentProcessor{
         if (paymentRequestDTO.details() != null){
             payment.setDetails(paymentRequestDTO.details());
             // log that payment details have been set
+            logger.info("Details for payment has been set.");
         }
 
+        logger.debug("Payment has been validated as TYPE2 payment.");
         return payment;
     }
 
