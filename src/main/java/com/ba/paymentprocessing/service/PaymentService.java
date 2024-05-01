@@ -63,6 +63,7 @@ public class PaymentService {
     public Payment createPayment(PaymentRequestDTO paymentRequestDTO) {
 
         Payment payment = new Payment();
+        PaymentProcessor paymentProcessor;
 //        implement logging service
         payment.setPaymentType(PaymentType.toEnum(paymentRequestDTO.paymentType()));
         payment.setCanceled(false);
@@ -70,7 +71,6 @@ public class PaymentService {
         payment.setDebtOrIban(paymentRequestDTO.debtOrIban());
         payment.setCreditOrIban(paymentRequestDTO.creditOrIban());
 
-        PaymentProcessor paymentProcessor;
         if (payment.getPaymentType() == PaymentType.TYPE1) {
             paymentProcessor = type1PaymentProcessor;
         } else if (payment.getPaymentType() == PaymentType.TYPE2) {
@@ -84,13 +84,10 @@ public class PaymentService {
     }
 
     public void cancelPayment(UUID id) {
+        PaymentProcessor paymentProcessor;
         LocalDateTime currentDateTime = LocalDateTime.now();
         Payment payment = getById(id);
         LocalDateTime paymentCreationDateTime = payment.getCreatedAt().toLocalDateTime();
-
-        BigDecimal type1 = BigDecimal.valueOf(0.05);
-        BigDecimal type2 = BigDecimal.valueOf(0.1);
-        BigDecimal type3 = BigDecimal.valueOf(0.15);
 
         if (payment.isCanceled()) throw new RequestValidationException(String.format("The payment with Id: %s is already cancelled", id));
 
@@ -98,12 +95,13 @@ public class PaymentService {
             // Is 0:55 1 or 0 | for now its 1
             BigDecimal duration = BigDecimal.valueOf(Math.max(Duration.between(paymentCreationDateTime, currentDateTime).toHours(), 1));
             if (payment.getPaymentType() == PaymentType.TYPE1) {
-                payment.setCancellationFee(type1.multiply(duration));
+                paymentProcessor = type1PaymentProcessor;
             } else if (payment.getPaymentType() == PaymentType.TYPE2) {
-                payment.setCancellationFee(type2.multiply(duration));
-            } else if (payment.getPaymentType() == PaymentType.TYPE3) {
-                payment.setCancellationFee(type3.multiply(duration));
+                paymentProcessor = type2PaymentProcessor;
+            } else {
+                paymentProcessor = type3PaymentProcessor;
             }
+            payment.setCancellationFee(paymentProcessor.calculateCancellationFee(duration));
             payment.setCanceled(true);
             paymentRepository.save(payment);
         } else throw new RequestValidationException("Payment can only be cancelled on the same day it was created");

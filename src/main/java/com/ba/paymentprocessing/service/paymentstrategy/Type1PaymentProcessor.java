@@ -26,7 +26,7 @@ public class Type1PaymentProcessor implements PaymentProcessor {
     }
 
     @Override
-    public void calculateCancellationFee(Payment payment) {
-        BigDecimal type1 = BigDecimal.valueOf(0.05);
+    public BigDecimal calculateCancellationFee(BigDecimal duration) {
+        return duration.multiply(BigDecimal.valueOf(0.05));
     }
 }
