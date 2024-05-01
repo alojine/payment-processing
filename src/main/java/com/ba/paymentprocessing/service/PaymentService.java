@@ -65,11 +65,16 @@ public class PaymentService {
         Payment payment = new Payment();
         PaymentProcessor paymentProcessor;
 //        implement logging service
+
+        if (paymentRequestDTO.paymentType() == null || paymentRequestDTO.amount() == null ||
+        paymentRequestDTO.currency() == null || paymentRequestDTO.debtOrIban() == null || paymentRequestDTO.creditOrIban() == null)
+            throw new RequestValidationException("Payment is missing some mandatory information.");
+
         payment.setPaymentType(PaymentType.toEnum(paymentRequestDTO.paymentType()));
-        payment.setCanceled(false);
         payment.setAmount(paymentRequestDTO.amount());
         payment.setDebtOrIban(paymentRequestDTO.debtOrIban());
         payment.setCreditOrIban(paymentRequestDTO.creditOrIban());
+        payment.setCanceled(false);
 
         if (payment.getPaymentType() == PaymentType.TYPE1) {
             paymentProcessor = type1PaymentProcessor;
@@ -89,7 +94,7 @@ public class PaymentService {
         Payment payment = getById(id);
         LocalDateTime paymentCreationDateTime = payment.getCreatedAt().toLocalDateTime();
 
-        if (payment.isCanceled()) throw new RequestValidationException(String.format("The payment with Id: %s is already cancelled", id));
+        if (payment.isCanceled()) throw new RequestValidationException(String.format("The payment with Id: %s is already cancelled.", id));
 
         if (currentDateTime.toLocalDate().isEqual(paymentCreationDateTime.toLocalDate())) {
             // Is 0:55 1 or 0 | for now its 1
@@ -104,6 +109,6 @@ public class PaymentService {
             payment.setCancellationFee(paymentProcessor.calculateCancellationFee(duration));
             payment.setCanceled(true);
             paymentRepository.save(payment);
-        } else throw new RequestValidationException("Payment can only be cancelled on the same day it was created");
+        } else throw new RequestValidationException("Payment can only be cancelled on the same day it was created.");
     }
 }
