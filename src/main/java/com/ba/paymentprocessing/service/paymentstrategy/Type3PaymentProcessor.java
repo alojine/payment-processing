@@ -4,11 +4,13 @@ import com.ba.paymentprocessing.dto.PaymentRequestDTO;
 import com.ba.paymentprocessing.exception.RequestValidationException;
 import com.ba.paymentprocessing.model.Payment;
 import com.ba.paymentprocessing.type.Currency;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 @Service
+@Qualifier("type3PaymentProcessor")
 public class Type3PaymentProcessor implements PaymentProcessor{
 
     @Override

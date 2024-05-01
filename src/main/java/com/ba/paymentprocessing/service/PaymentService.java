@@ -7,9 +7,9 @@ import com.ba.paymentprocessing.model.Payment;
 import com.ba.paymentprocessing.exception.ResourceNotFoundException;
 import com.ba.paymentprocessing.repository.PaymentRepository;
 import com.ba.paymentprocessing.service.paymentstrategy.PaymentProcessor;
-import com.ba.paymentprocessing.type.Currency;
 import com.ba.paymentprocessing.type.PaymentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -21,10 +21,19 @@ import java.util.UUID;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final PaymentProcessor type1PaymentProcessor;
+    private final PaymentProcessor type2PaymentProcessor;
+    private final PaymentProcessor type3PaymentProcessor;
 
     @Autowired
-    public PaymentService(PaymentRepository paymentRepository) {
+    public PaymentService(PaymentRepository paymentRepository,
+                          @Qualifier("type1PaymentProcessor") PaymentProcessor type1PaymentProcessor,
+                          @Qualifier("type2PaymentProcessor") PaymentProcessor type2PaymentProcessor,
+                          @Qualifier("type3PaymentProcessor") PaymentProcessor type3PaymentProcessor) {
         this.paymentRepository = paymentRepository;
+        this.type1PaymentProcessor = type1PaymentProcessor;
+        this.type2PaymentProcessor = type2PaymentProcessor;
+        this.type3PaymentProcessor = type3PaymentProcessor;
     }
 
     private Payment getById(UUID id) {
@@ -61,24 +70,15 @@ public class PaymentService {
         payment.setDebtOrIban(paymentRequestDTO.debtOrIban());
         payment.setCreditOrIban(paymentRequestDTO.creditOrIban());
 
+        PaymentProcessor paymentProcessor;
         if (payment.getPaymentType() == PaymentType.TYPE1) {
-            payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
-            if (payment.getCurrency() != Currency.EUR) {
-                throw new RequestValidationException("TYPE1 payment only supports EUR currency");
-            }
-            payment.setDetails(paymentRequestDTO.details());
+            paymentProcessor = type1PaymentProcessor;
         } else if (payment.getPaymentType() == PaymentType.TYPE2) {
-            payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
-            if (payment.getCurrency() != Currency.USD) {
-                throw new RequestValidationException("TYPE2 payment only supports USD currency");
-            }
-            if (paymentRequestDTO.details() != null)
-                payment.setDetails(paymentRequestDTO.details());
-
-        } else if (payment.getPaymentType() == PaymentType.TYPE3) {
-            payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
-            payment.setBicCode(paymentRequestDTO.bicCode());
+            paymentProcessor = type2PaymentProcessor;
+        } else {
+            paymentProcessor = type3PaymentProcessor;
         }
+        payment = paymentProcessor.validate(payment, paymentRequestDTO);
 
         return paymentRepository.save(payment);
     }
