@@ -22,7 +22,7 @@ public class Type1PaymentProcessor implements PaymentProcessor {
         payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
 
         if (paymentRequestDTO.details() == null || paymentRequestDTO.details().isEmpty())
-            throw new RequestValidationException("TYPE1 payment must have details field");
+            throw new RequestValidationException("TYPE1 payment must have a details field");
         payment.setDetails(paymentRequestDTO.details());
 
         logger.info("Payment has been validated as TYPE1 payment.");

@@ -1,6 +1,6 @@
 package com.ba.paymentprocessing.service;
 
-import com.ba.paymentprocessing.dto.PaymentByIdResponseDto;
+import com.ba.paymentprocessing.dto.PaymentResponseDTO;
 import com.ba.paymentprocessing.dto.PaymentRequestDTO;
 import com.ba.paymentprocessing.exception.RequestValidationException;
 import com.ba.paymentprocessing.model.Payment;
@@ -56,9 +56,9 @@ public class PaymentService {
                 .toList();
     }
 
-    public PaymentByIdResponseDto getPaymentById(UUID id) {
+    public PaymentResponseDTO getPaymentById(UUID id) {
         Payment payment = getById(id);
-        return new PaymentByIdResponseDto(
+        return new PaymentResponseDTO(
                 payment.getId(),
                 BigDecimal.ONE
         );

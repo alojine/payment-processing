@@ -1,6 +1,6 @@
 package com.ba.paymentprocessing.controller;
 
-import com.ba.paymentprocessing.dto.PaymentByIdResponseDto;
+import com.ba.paymentprocessing.dto.PaymentResponseDTO;
 import com.ba.paymentprocessing.dto.PaymentRequestDTO;
 import com.ba.paymentprocessing.exception.ResourceNotFoundException;
 import com.ba.paymentprocessing.service.PaymentService;
@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -65,14 +64,14 @@ class PaymentControllerTest {
     }
 
     @Test
-    void whenGetPaymentById_thenReturnPaymentByIdResponseDto() throws Exception {
-        when(paymentService.getPaymentById(any())).thenReturn(providePaymentByIdResponseDto());
+    void whenGetPaymentById_thenReturnPaymentResponseDto() throws Exception {
+        when(paymentService.getPaymentById(any())).thenReturn(providePaymentResponseDto());
 
         mvc.perform(MockMvcRequestBuilders.get("/api/v1/payments/{uuid}", uuid.toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(objectMapper.writeValueAsString(providePaymentByIdResponseDto())))
+                .andExpect(content().json(objectMapper.writeValueAsString(providePaymentResponseDto())))
                 .andReturn();
     }
 
@@ -104,8 +103,8 @@ class PaymentControllerTest {
         );
     }
 
-    static PaymentByIdResponseDto providePaymentByIdResponseDto() {
-        return new PaymentByIdResponseDto(
+    static PaymentResponseDTO providePaymentResponseDto() {
+        return new PaymentResponseDTO(
                 UUID.fromString("661cd653-b5b3-44bf-9864-8cf0b35f3a21"),
                 BigDecimal.ONE
         );

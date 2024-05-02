@@ -1,6 +1,6 @@
 package com.ba.paymentprocessing.controller;
 
-import com.ba.paymentprocessing.dto.PaymentByIdResponseDto;
+import com.ba.paymentprocessing.dto.PaymentResponseDTO;
 import com.ba.paymentprocessing.dto.PaymentRequestDTO;
 import com.ba.paymentprocessing.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class PaymentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PaymentByIdResponseDto> getPaymentById(@PathVariable UUID id) {
+    public ResponseEntity<PaymentResponseDTO> getPaymentById(@PathVariable UUID id) {
         return new ResponseEntity<>(paymentService.getPaymentById(id), HttpStatus.OK);
     }
 
