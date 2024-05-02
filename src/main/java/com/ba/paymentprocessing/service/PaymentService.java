@@ -45,13 +45,13 @@ public class PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Payment with Id: %s does not exist", id)));
     }
 
-    public List<UUID> getFilteredPayments(BigDecimal lowerBound, BigDecimal upperBound) {
+    public List<UUID> getFilteredPayments(BigDecimal minAmount, BigDecimal maxAmount) {
         List<Payment> payments = paymentRepository.findAll();
 
         return payments.stream()
                 .filter(payment -> !payment.isCanceled() &&
-                        (lowerBound == null || payment.getAmount().compareTo(lowerBound) >= 0) &&
-                        (upperBound== null || payment.getAmount().compareTo(upperBound) <= 0))
+                        (minAmount == null || payment.getAmount().compareTo(minAmount) >= 0) &&
+                        (maxAmount== null || payment.getAmount().compareTo(maxAmount) <= 0))
                 .map(Payment::getId)
                 .toList();
     }
@@ -60,35 +60,35 @@ public class PaymentService {
         Payment payment = getById(id);
         return new PaymentResponseDTO(
                 payment.getId(),
-                BigDecimal.ONE
+                payment.getCancellationFee()
         );
     }
 
     public void createPayment(PaymentRequestDTO paymentRequestDTO) {
-
-        Payment payment = new Payment();
-        PaymentProcessor paymentProcessor;
         logger.info("Payment creation process has started");
 
         if (paymentRequestDTO.paymentType() == null || paymentRequestDTO.amount() == null ||
         paymentRequestDTO.currency() == null || paymentRequestDTO.debtOrIban() == null || paymentRequestDTO.creditOrIban() == null)
             throw new RequestValidationException("Payment is missing some mandatory information.");
 
-        payment.setPaymentType(PaymentType.toEnum(paymentRequestDTO.paymentType()));
-        payment.setAmount(paymentRequestDTO.amount());
-        payment.setDebtOrIban(paymentRequestDTO.debtOrIban());
-        payment.setCreditOrIban(paymentRequestDTO.creditOrIban());
-        payment.setCanceled(false);
-
-        if (payment.getPaymentType() == PaymentType.TYPE1) {
+        PaymentType paymentType = PaymentType.toEnum(paymentRequestDTO.paymentType());
+        PaymentProcessor paymentProcessor;
+        if (paymentType == PaymentType.TYPE1) {
             paymentProcessor = type1PaymentProcessor;
-        } else if (payment.getPaymentType() == PaymentType.TYPE2) {
+        } else if (paymentType == PaymentType.TYPE2) {
             paymentProcessor = type2PaymentProcessor;
         } else {
             paymentProcessor = type3PaymentProcessor;
         }
 
-        payment = paymentProcessor.validate(payment, paymentRequestDTO);
+        Payment payment = paymentProcessor.validate(new Payment(), paymentRequestDTO);
+        payment.setPaymentType(paymentType);
+        payment.setAmount(paymentRequestDTO.amount());
+        payment.setDebtOrIban(paymentRequestDTO.debtOrIban());
+        payment.setCreditOrIban(paymentRequestDTO.creditOrIban());
+        payment.setCanceled(false);
+
+
         paymentRepository.save(payment);
         logger.info("Payment creation process has finished.");
     }
