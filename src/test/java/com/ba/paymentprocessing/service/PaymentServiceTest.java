@@ -14,9 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,16 +36,7 @@ class PaymentServiceTest {
     private PaymentRepository paymentRepository;
 
     @Mock
-    @Qualifier("type1PaymentProcessor")
-    private PaymentProcessor type1PaymentProcessor;
-
-    @Mock
-    @Qualifier("type2PaymentProcessor")
-    private PaymentProcessor type2PaymentProcessor;
-
-    @Mock
-    @Qualifier("type3PaymentProcessor")
-    private PaymentProcessor type3PaymentProcessor;
+    private PaymentProcessor paymentProcessor;
 
     @Test
     void getPaymentById_returnPaymentResponseDto() {
@@ -104,7 +96,7 @@ class PaymentServiceTest {
     }
 
     @Test
-    void createPayment_returnType1Payment() {
+    void createPayment_Type1Payment_Success() {
         Payment type1Payment = new Payment();
         type1Payment.setPaymentType(PaymentType.TYPE1);
         type1Payment.setAmount(BigDecimal.TEN);
@@ -128,13 +120,14 @@ class PaymentServiceTest {
                 ""
         );
 
-        when(type1PaymentProcessor.validate(any())).thenReturn(validatedType1Payment);
+        when(paymentProcessor.validate(any())).thenReturn(validatedType1Payment);
+
         paymentService.createPayment(paymentRequestDTO);
         verify(paymentRepository, times(1)).save(type1Payment);
     }
 
     @Test
-    void createPayment_returnType2Payment() {
+    void createPayment_Type2Payment_Success() {
         Payment type2Payment = new Payment();
         type2Payment.setPaymentType(PaymentType.TYPE2);
         type2Payment.setAmount(BigDecimal.TEN);
@@ -158,13 +151,14 @@ class PaymentServiceTest {
                 ""
         );
 
-        when(type2PaymentProcessor.validate(any())).thenReturn(validatedType2Payment);
+        when(paymentProcessor.validate(any())).thenReturn(validatedType2Payment);
+
         paymentService.createPayment(paymentRequestDTO);
         verify(paymentRepository, times(1)).save(type2Payment);
     }
 
     @Test
-    void createPayment_returnType3Payment() {
+    void createPayment_Type3Payment_Success() {
         Payment type3Payment = new Payment();
         type3Payment.setPaymentType(PaymentType.TYPE3);
         type3Payment.setAmount(BigDecimal.TEN);
@@ -188,9 +182,55 @@ class PaymentServiceTest {
                 "HBUKGB4B - HBUK"
         );
 
-        when(type3PaymentProcessor.validate(any())).thenReturn(validatedType3Payment);
+        when(paymentProcessor.validate(any())).thenReturn(validatedType3Payment);
+
         paymentService.createPayment(paymentRequestDTO);
         verify(paymentRepository, times(1)).save(type3Payment);
+    }
+
+    @Test
+    void cancelPayment_Type1Processor_Success() {
+        UUID id = UUID.fromString("ba354a83-b969-4eb3-96d7-f268ab98f0a5");
+        Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now().minusHours(1));
+        Payment payment = providePayment();
+        payment.setCanceled(true);
+        payment.setCancellationFee(BigDecimal.TEN);
+        payment.setCreatedAt(timestamp);
+
+        Payment paymentWithValidDate = providePayment();
+        paymentWithValidDate.setCreatedAt(timestamp);
+
+        when(paymentRepository.findById(any())).thenReturn(Optional.of(paymentWithValidDate));
+        when(paymentProcessor.calculateCancellationFee(any())).thenReturn(BigDecimal.TEN);
+
+        assertDoesNotThrow(() -> paymentService.cancelPayment(id));
+        verify(paymentRepository, times(1)).save(payment);
+    }
+
+    @Test
+    void cancelPayment_withCanceledPayment_throwRequestValidationException() {
+        UUID id = UUID.fromString("ba354a83-b969-4eb3-96d7-f268ab98f0a5");
+        Payment payment = providePayment();
+        payment.setCanceled(true);
+        payment.setCancellationFee(BigDecimal.TEN);
+        payment.setCreatedAt(Timestamp.valueOf(LocalDateTime.now().minusHours(1)));
+
+        when(paymentRepository.findById(any())).thenReturn(Optional.of(payment));
+
+        assertThrows(RequestValidationException.class, () -> paymentService.cancelPayment(id));
+    }
+
+    @Test
+    void cancelPayment_notValidCancelTime_throwRequestValidationException() {
+        UUID id = UUID.fromString("ba354a83-b969-4eb3-96d7-f268ab98f0a5");
+        Payment payment = providePayment();
+        payment.setCanceled(false);
+        payment.setCancellationFee(BigDecimal.TEN);
+        payment.setCreatedAt(Timestamp.valueOf(LocalDateTime.now().minusHours(25)));
+
+        when(paymentRepository.findById(any())).thenReturn(Optional.of(payment));
+
+        assertThrows(RequestValidationException.class, () -> paymentService.cancelPayment(id));
     }
 
     static List<Payment> providePaymentList() {
