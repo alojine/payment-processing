@@ -6,6 +6,6 @@ import com.ba.paymentprocessing.model.Payment;
 import java.math.BigDecimal;
 
 public interface PaymentProcessor {
-    Payment validate(Payment payment, PaymentRequestDTO paymentRequestDTO);
+    Payment validate(PaymentRequestDTO paymentRequestDTO);
     BigDecimal calculateCancellationFee(BigDecimal duration);
 }

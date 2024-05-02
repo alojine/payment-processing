@@ -17,7 +17,8 @@ public class Type2PaymentProcessor implements PaymentProcessor{
     private final Logger logger = LoggerFactory.getLogger(Type2PaymentProcessor.class);
 
     @Override
-    public Payment validate(Payment payment, PaymentRequestDTO paymentRequestDTO) {
+    public Payment validate(PaymentRequestDTO paymentRequestDTO) {
+        Payment payment = new Payment();
         if (Currency.toEnum(paymentRequestDTO.currency()) != Currency.USD)
             throw new RequestValidationException("TYPE1 payment only supports USD currency.");
         payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));

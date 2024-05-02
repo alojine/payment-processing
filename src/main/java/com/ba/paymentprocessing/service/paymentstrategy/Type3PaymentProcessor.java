@@ -17,7 +17,8 @@ public class Type3PaymentProcessor implements PaymentProcessor{
     private final Logger logger = LoggerFactory.getLogger(Type3PaymentProcessor.class);
 
     @Override
-    public Payment validate(Payment payment, PaymentRequestDTO paymentRequestDTO) {
+    public Payment validate(PaymentRequestDTO paymentRequestDTO) {
+        Payment payment = new Payment();
         payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
 
         if (paymentRequestDTO.bicCode().isEmpty())

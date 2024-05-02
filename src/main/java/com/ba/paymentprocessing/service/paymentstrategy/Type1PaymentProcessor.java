@@ -16,7 +16,8 @@ import java.math.BigDecimal;
 public class Type1PaymentProcessor implements PaymentProcessor {
     private final Logger logger = LoggerFactory.getLogger(Type1PaymentProcessor.class);
     @Override
-    public Payment validate(Payment payment, PaymentRequestDTO paymentRequestDTO) {
+    public Payment validate(PaymentRequestDTO paymentRequestDTO) {
+        Payment payment = new Payment();
         if (Currency.toEnum(paymentRequestDTO.currency()) != Currency.EUR)
             throw new RequestValidationException("TYPE1 payment only supports EUR currency");
         payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));

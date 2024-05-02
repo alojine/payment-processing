@@ -4,7 +4,6 @@ import com.ba.paymentprocessing.dto.PaymentRequestDTO;
 import com.ba.paymentprocessing.exception.RequestValidationException;
 import com.ba.paymentprocessing.model.Payment;
 import com.ba.paymentprocessing.type.Currency;
-import com.ba.paymentprocessing.type.PaymentType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,36 +22,19 @@ class Type3PaymentProcessorTest {
 
     @Test
     void whenValidate_thenReturnValidatedPayment() {
-        assertThat(type3PaymentProcessor.validate(providePayment(), providePaymentRequestDTO())).isEqualTo(provideValidatedPayment());
+        assertThat(type3PaymentProcessor.validate(providePaymentRequestDTO())).isEqualTo(provideValidatedPayment());
     }
 
     @Test
     void whenValidatePayment_withNoDetails_thenThrowRequestValidationException() {
-        Payment payment = providePayment();
         PaymentRequestDTO requestDTO = provideNoBicCodePaymentRequestDTO();
-        assertThrows(RequestValidationException.class, () -> type3PaymentProcessor.validate(payment, requestDTO));
+        assertThrows(RequestValidationException.class, () -> type3PaymentProcessor.validate(requestDTO));
     }
 
     static Payment provideValidatedPayment() {
         Payment payment = new Payment();
-        payment.setPaymentType(PaymentType.toEnum("TYPE1"));
-        payment.setAmount(BigDecimal.TEN);
-        payment.setDebtOrIban("IE29 AIBK 9311 5212 3456 78");
-        payment.setCreditOrIban("IE29 AIBK 9311 5212 3456 78");
-        payment.setCanceled(false);
         payment.setCurrency(Currency.EUR);
         payment.setBicCode("HBUKGB4B");
-
-        return payment;
-    }
-
-    static Payment providePayment() {
-        Payment payment = new Payment();
-        payment.setPaymentType(PaymentType.toEnum("TYPE1"));
-        payment.setAmount(BigDecimal.TEN);
-        payment.setDebtOrIban("IE29 AIBK 9311 5212 3456 78");
-        payment.setCreditOrIban("IE29 AIBK 9311 5212 3456 78");
-        payment.setCanceled(false);
 
         return payment;
     }

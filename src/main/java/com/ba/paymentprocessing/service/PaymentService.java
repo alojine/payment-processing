@@ -81,7 +81,7 @@ public class PaymentService {
             paymentProcessor = type3PaymentProcessor;
         }
 
-        Payment payment = paymentProcessor.validate(new Payment(), paymentRequestDTO);
+        Payment payment = paymentProcessor.validate(paymentRequestDTO);
         payment.setPaymentType(paymentType);
         payment.setAmount(paymentRequestDTO.amount());
         payment.setDebtOrIban(paymentRequestDTO.debtOrIban());
