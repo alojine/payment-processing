@@ -21,7 +21,7 @@ public class Type1PaymentProcessor implements PaymentProcessor {
             throw new RequestValidationException("TYPE1 payment only supports EUR currency");
         payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
 
-        if (paymentRequestDTO.details() == null || paymentRequestDTO.details().isEmpty())
+        if (paymentRequestDTO.details().isEmpty())
             throw new RequestValidationException("TYPE1 payment must have a details field");
         payment.setDetails(paymentRequestDTO.details());
 

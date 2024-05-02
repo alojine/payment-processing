@@ -20,7 +20,7 @@ public class Type3PaymentProcessor implements PaymentProcessor{
     public Payment validate(Payment payment, PaymentRequestDTO paymentRequestDTO) {
         payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
 
-        if (paymentRequestDTO.bicCode() == null)
+        if (paymentRequestDTO.bicCode().isEmpty())
             throw new RequestValidationException("TYPE3 payment must have BIC Code field defined");
         payment.setBicCode(paymentRequestDTO.bicCode());
 
