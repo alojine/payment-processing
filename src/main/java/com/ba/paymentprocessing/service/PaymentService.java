@@ -88,16 +88,16 @@ public class PaymentService {
 
         if (payment.isCanceled()) throw new RequestValidationException(String.format("The payment with Id: %s is already cancelled.", id));
 
-        if (currentDateTime.toLocalDate().isEqual(paymentCreationDateTime.toLocalDate())) {
-            // Is 0:55 1 or 0 | for now its 1
-            BigDecimal duration = BigDecimal.valueOf(Math.max(Duration.between(paymentCreationDateTime, currentDateTime).toHours(), 1));
-            PaymentProcessor paymentProcessor = findPaymentProcessor(payment.getPaymentType());
+        if (Duration.between(paymentCreationDateTime, currentDateTime).toHours() > 24)
+            throw new RequestValidationException("Payment can only be cancelled on the same day it was created.");
 
-            payment.setCancellationFee(paymentProcessor.calculateCancellationFee(duration));
-            payment.setCanceled(true);
-            paymentRepository.save(payment);
-            logger.info("Payment cancellation process has finished.");
-        } else throw new RequestValidationException("Payment can only be cancelled on the same day it was created.");
+        BigDecimal duration = BigDecimal.valueOf(Duration.between(paymentCreationDateTime, currentDateTime).toHours());
+        PaymentProcessor paymentProcessor = findPaymentProcessor(payment.getPaymentType());
+
+        payment.setCancellationFee(paymentProcessor.calculateCancellationFee(duration));
+        payment.setCanceled(true);
+        paymentRepository.save(payment);
+        logger.info("Payment cancellation process has finished.");
     }
 
     private Payment getById(UUID id) {
