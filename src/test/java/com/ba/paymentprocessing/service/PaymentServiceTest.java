@@ -106,13 +106,17 @@ class PaymentServiceTest {
     @Test
     void createPayment_returnType1Payment() {
         Payment type1Payment = new Payment();
-        type1Payment.setPaymentType(PaymentType.toEnum("TYPE1"));
+        type1Payment.setPaymentType(PaymentType.TYPE1);
         type1Payment.setAmount(BigDecimal.TEN);
         type1Payment.setDebtOrIban("IE29 AIBK 9311 5212 3456 78");
         type1Payment.setCreditOrIban("IE29 AIBK 9311 5212 3456 78");
         type1Payment.setCanceled(false);
         type1Payment.setCurrency(Currency.EUR);
         type1Payment.setDetails("Payment for car repair");
+
+        Payment validatedType1Payment = new Payment();
+        validatedType1Payment.setCurrency(Currency.EUR);
+        validatedType1Payment.setDetails("Payment for car repair");
 
         PaymentRequestDTO paymentRequestDTO = new PaymentRequestDTO(
                 "TYPE1",
@@ -124,8 +128,69 @@ class PaymentServiceTest {
                 ""
         );
 
+        when(type1PaymentProcessor.validate(any())).thenReturn(validatedType1Payment);
         paymentService.createPayment(paymentRequestDTO);
         verify(paymentRepository, times(1)).save(type1Payment);
+    }
+
+    @Test
+    void createPayment_returnType2Payment() {
+        Payment type2Payment = new Payment();
+        type2Payment.setPaymentType(PaymentType.TYPE2);
+        type2Payment.setAmount(BigDecimal.TEN);
+        type2Payment.setDebtOrIban("IE29 AIBK 9311 5212 3456 78");
+        type2Payment.setCreditOrIban("IE29 AIBK 9311 5212 3456 78");
+        type2Payment.setCanceled(false);
+        type2Payment.setCurrency(Currency.USD);
+        type2Payment.setDetails("Payment for car repair");
+
+        Payment validatedType2Payment = new Payment();
+        validatedType2Payment.setCurrency(Currency.USD);
+        validatedType2Payment.setDetails("Payment for car repair");
+
+        PaymentRequestDTO paymentRequestDTO = new PaymentRequestDTO(
+                "TYPE2",
+                BigDecimal.TEN,
+                "USD",
+                "IE29 AIBK 9311 5212 3456 78",
+                "IE29 AIBK 9311 5212 3456 78",
+                "Payment for car repair",
+                ""
+        );
+
+        when(type2PaymentProcessor.validate(any())).thenReturn(validatedType2Payment);
+        paymentService.createPayment(paymentRequestDTO);
+        verify(paymentRepository, times(1)).save(type2Payment);
+    }
+
+    @Test
+    void createPayment_returnType3Payment() {
+        Payment type3Payment = new Payment();
+        type3Payment.setPaymentType(PaymentType.TYPE3);
+        type3Payment.setAmount(BigDecimal.TEN);
+        type3Payment.setDebtOrIban("IE29 AIBK 9311 5212 3456 78");
+        type3Payment.setCreditOrIban("IE29 AIBK 9311 5212 3456 78");
+        type3Payment.setCanceled(false);
+        type3Payment.setCurrency(Currency.USD);
+        type3Payment.setBicCode("HBUKGB4B - HBUK");
+
+        Payment validatedType3Payment = new Payment();
+        validatedType3Payment.setCurrency(Currency.USD);
+        validatedType3Payment.setBicCode("HBUKGB4B - HBUK");
+
+        PaymentRequestDTO paymentRequestDTO = new PaymentRequestDTO(
+                "TYPE3",
+                BigDecimal.TEN,
+                "USD",
+                "IE29 AIBK 9311 5212 3456 78",
+                "IE29 AIBK 9311 5212 3456 78",
+                null,
+                "HBUKGB4B - HBUK"
+        );
+
+        when(type3PaymentProcessor.validate(any())).thenReturn(validatedType3Payment);
+        paymentService.createPayment(paymentRequestDTO);
+        verify(paymentRepository, times(1)).save(type3Payment);
     }
 
     static List<Payment> providePaymentList() {
