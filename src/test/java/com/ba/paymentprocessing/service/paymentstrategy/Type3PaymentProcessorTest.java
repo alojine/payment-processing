@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +30,11 @@ class Type3PaymentProcessorTest {
     void whenValidatePayment_withNoDetails_thenThrowRequestValidationException() {
         PaymentRequestDTO requestDTO = provideNoBicCodePaymentRequestDTO();
         assertThrows(RequestValidationException.class, () -> type3PaymentProcessor.validate(requestDTO));
+    }
+
+    @Test
+    void whenCalculatePayment_returnCalculatedBigDecimal() {
+        assertThat(type3PaymentProcessor.calculateCancellationFee(BigDecimal.TEN)).isEqualTo(BigDecimal.valueOf(1.50).setScale(2, RoundingMode.CEILING));
     }
 
     static Payment provideValidatedPayment() {

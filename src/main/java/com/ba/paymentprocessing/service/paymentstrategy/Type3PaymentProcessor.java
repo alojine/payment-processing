@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 @Qualifier("type3PaymentProcessor")
@@ -31,6 +32,6 @@ public class Type3PaymentProcessor implements PaymentProcessor{
 
     @Override
     public BigDecimal calculateCancellationFee(BigDecimal duration) {
-        return duration.multiply(BigDecimal.valueOf(0.15));
+        return duration.multiply(BigDecimal.valueOf(0.15)).setScale(2, RoundingMode.CEILING);
     }
 }
