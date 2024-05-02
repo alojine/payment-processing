@@ -23,14 +23,7 @@ public class PaymentRequestFilter implements Filter {
         String method = httpRequest.getMethod();
         String requestURI = httpRequest.getRequestURI();
 
-        StringBuilder logMessage = new StringBuilder();
-        logMessage.append("Client IP: ").append(clientIp).append(", Method: ").append(method).append(", URI: ").append(requestURI);
-//      needs a wrapper. stream cant be opened twice. and tomcat already opened
-//        if (method.equalsIgnoreCase("POST")) {
-//            logMessage.append(", Request Body: ").append(IOUtils.toString(servletRequest.getInputStream()));
-//        }
-
-        logger.info(logMessage.toString());
+        logger.info("Client IP: {}, Method: {}, URI: {}", clientIp, method, requestURI);
 
         filterChain.doFilter(servletRequest, servletResponse);
     }

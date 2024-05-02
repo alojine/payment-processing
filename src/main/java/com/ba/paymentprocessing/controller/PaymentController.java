@@ -24,10 +24,10 @@ public class PaymentController {
 
     @GetMapping
     public ResponseEntity<List<UUID>> getFilteredPayments(
-            @RequestParam(required = false) BigDecimal lowerBound,
-            @RequestParam(required = false) BigDecimal upperBound
+            @RequestParam(required = false) BigDecimal minAmount,
+            @RequestParam(required = false) BigDecimal maxAmount
     ) {
-        return new ResponseEntity<>(paymentService.getFilteredPayments(lowerBound, upperBound), HttpStatus.OK);
+        return new ResponseEntity<>(paymentService.getFilteredPayments(minAmount, maxAmount), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
