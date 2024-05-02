@@ -19,13 +19,12 @@ public class Type2PaymentProcessor implements PaymentProcessor{
     @Override
     public Payment validate(Payment payment, PaymentRequestDTO paymentRequestDTO) {
         if (Currency.toEnum(paymentRequestDTO.currency()) != Currency.USD)
-            throw new RequestValidationException("TYPE1 payment only supports USD currency");
+            throw new RequestValidationException("TYPE1 payment only supports USD currency.");
         payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
 
         if (paymentRequestDTO.details() != null){
             payment.setDetails(paymentRequestDTO.details());
-            // log that payment details have been set
-            logger.info("Details for payment has been set.");
+            logger.info("Details for payment TYPE2 have been set.");
         }
 
         logger.debug("Payment has been validated as TYPE2 payment.");
