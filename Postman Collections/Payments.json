@@ -1,0 +1,151 @@
+{
+	"info": {
+		"_postman_id": "325ca425-6b89-4bf0-bebd-2893fe462877",
+		"name": "Payments",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST Payment",
+			"item": [
+				{
+					"name": "POST TYPE1 payment",
+					"id": "c2bcb84f-f74d-44ff-85d8-111d77928537",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paymentType\": \"TYPE1\",\n    \"amount\": 10,\n    \"currency\": \"EUR\",\n    \"debtOrIban\": \"IE29 AIBK 9311 5212 3456 78\",\n    \"creditOrIban\": \"IE29 AIBK 9311 5212 3456 78\",\n    \"details\": \"Payment for car repair\",\n    \"bicCode\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/v1/payments"
+					},
+					"response": []
+				},
+				{
+					"name": "POST TYPE2 payment",
+					"id": "1524bb2a-7f9e-4d59-a568-1cbda3fea141",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paymentType\": \"TYPE2\",\n    \"amount\": 15,\n    \"currency\": \"USD\",\n    \"debtOrIban\": \"IE29 AIBK 9311 5212 3456 78\",\n    \"creditOrIban\": \"IE29 AIBK 9311 5212 3456 78\",\n    \"details\": \"Payment for car repair\",\n    \"bicCode\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/v1/payments"
+					},
+					"response": []
+				},
+				{
+					"name": "POST TYPE3 payment",
+					"id": "fe722dd9-c52c-426b-8572-f9f91155ab10",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paymentType\": \"TYPE3\",\n    \"amount\": 15,\n    \"currency\": \"USD\",\n    \"debtOrIban\": \"IE29 AIBK 9311 5212 3456 78\",\n    \"creditOrIban\": \"IE29 AIBK 9311 5212 3456 78\",\n    \"details\": \"Payment for car repair\",\n    \"bicCode\": \"HBUKGB4B-HBUK\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:8080/api/v1/payments"
+					},
+					"response": []
+				}
+			],
+			"id": "e4dd3464-1ea7-478c-9148-780218d4f353"
+		},
+		{
+			"name": "GET payment by Id",
+			"id": "dd204d3f-6d98-4155-bfac-a7356617ad59",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080/api/v1/payments/f9e9363d-c02d-4ee8-afba-4a005ec16002"
+			},
+			"response": []
+		},
+		{
+			"name": "GET payments filtered",
+			"id": "88d474b9-97bd-4dcb-889d-27d2831a207d",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/payments?minAmount=9&maxAmount=14",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"payments"
+					],
+					"query": [
+						{
+							"key": "minAmount",
+							"value": "9"
+						},
+						{
+							"key": "maxAmount",
+							"value": "14"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT Cancel payment",
+			"id": "8925cc5e-3bb8-495a-933e-a8f9c21e65fb",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/payments/2f15f359-8434-4f9e-afc6-feb67fe97bd6"
+			},
+			"response": []
+		}
+	]
+}
