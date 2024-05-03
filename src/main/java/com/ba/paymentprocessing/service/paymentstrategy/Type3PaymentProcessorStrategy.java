@@ -13,28 +13,25 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Service
-@Qualifier("type2PaymentProcessor")
-public class Type2PaymentProcessor implements PaymentProcessor{
-    private final Logger logger = LoggerFactory.getLogger(Type2PaymentProcessor.class);
+@Qualifier("type3PaymentProcessor")
+public class Type3PaymentProcessorStrategy implements PaymentProcessorStrategy {
+    private final Logger logger = LoggerFactory.getLogger(Type3PaymentProcessorStrategy.class);
 
     @Override
     public Payment validate(PaymentRequestDTO paymentRequestDTO) {
         Payment payment = new Payment();
-        if (Currency.toEnum(paymentRequestDTO.currency()) != Currency.USD)
-            throw new RequestValidationException("TYPE1 payment only supports USD currency.");
         payment.setCurrency(Currency.toEnum(paymentRequestDTO.currency()));
 
-        if (paymentRequestDTO.details() != null){
-            payment.setDetails(paymentRequestDTO.details());
-            logger.info("Details for payment TYPE2 have been set.");
-        }
+        if (paymentRequestDTO.bicCode().isEmpty())
+            throw new RequestValidationException("TYPE3 payment must have BIC Code field defined");
+        payment.setBicCode(paymentRequestDTO.bicCode());
 
-        logger.debug("Payment has been validated as TYPE2 payment.");
+        logger.debug("Payment has been validated as TYPE3 payment.");
         return payment;
     }
 
     @Override
     public BigDecimal calculateCancellationFee(BigDecimal duration) {
-        return duration.multiply(BigDecimal.valueOf(0.1)).setScale(2, RoundingMode.CEILING);
+        return duration.multiply(BigDecimal.valueOf(0.15)).setScale(2, RoundingMode.CEILING);
     }
 }

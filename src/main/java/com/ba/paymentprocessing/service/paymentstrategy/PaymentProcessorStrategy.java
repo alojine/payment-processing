@@ -5,7 +5,7 @@ import com.ba.paymentprocessing.model.Payment;
 
 import java.math.BigDecimal;
 
-public interface PaymentProcessor {
+public interface PaymentProcessorStrategy {
     Payment validate(PaymentRequestDTO paymentRequestDTO);
     BigDecimal calculateCancellationFee(BigDecimal duration);
 }

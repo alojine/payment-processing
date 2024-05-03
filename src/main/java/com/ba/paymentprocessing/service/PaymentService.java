@@ -6,7 +6,7 @@ import com.ba.paymentprocessing.exception.RequestValidationException;
 import com.ba.paymentprocessing.model.Payment;
 import com.ba.paymentprocessing.exception.ResourceNotFoundException;
 import com.ba.paymentprocessing.repository.PaymentRepository;
-import com.ba.paymentprocessing.service.paymentstrategy.PaymentProcessor;
+import com.ba.paymentprocessing.service.paymentstrategy.PaymentProcessorStrategy;
 import com.ba.paymentprocessing.type.PaymentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,21 +23,21 @@ import java.util.UUID;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final PaymentProcessor type1PaymentProcessor;
-    private final PaymentProcessor type2PaymentProcessor;
-    private final PaymentProcessor type3PaymentProcessor;
+    private final PaymentProcessorStrategy type1PaymentProcessorStrategy;
+    private final PaymentProcessorStrategy type2PaymentProcessorStrategy;
+    private final PaymentProcessorStrategy type3PaymentProcessorStrategy;
 
     private final Logger logger = LoggerFactory.getLogger(PaymentService.class);
 
     @Autowired
     public PaymentService(PaymentRepository paymentRepository,
-                          @Qualifier("type1PaymentProcessor") PaymentProcessor type1PaymentProcessor,
-                          @Qualifier("type2PaymentProcessor") PaymentProcessor type2PaymentProcessor,
-                          @Qualifier("type3PaymentProcessor") PaymentProcessor type3PaymentProcessor) {
+                          @Qualifier("type1PaymentProcessorStrategy") PaymentProcessorStrategy type1PaymentProcessorStrategy,
+                          @Qualifier("type2PaymentProcessorStrategy") PaymentProcessorStrategy type2PaymentProcessorStrategy,
+                          @Qualifier("type3PaymentProcessorStrategy") PaymentProcessorStrategy type3PaymentProcessorStrategy) {
         this.paymentRepository = paymentRepository;
-        this.type1PaymentProcessor = type1PaymentProcessor;
-        this.type2PaymentProcessor = type2PaymentProcessor;
-        this.type3PaymentProcessor = type3PaymentProcessor;
+        this.type1PaymentProcessorStrategy = type1PaymentProcessorStrategy;
+        this.type2PaymentProcessorStrategy = type2PaymentProcessorStrategy;
+        this.type3PaymentProcessorStrategy = type3PaymentProcessorStrategy;
     }
 
     public List<UUID> getFilteredPayments(BigDecimal minAmount, BigDecimal maxAmount) {
@@ -67,9 +67,9 @@ public class PaymentService {
             throw new RequestValidationException("Payment is missing some mandatory information.");
 
         PaymentType paymentType = PaymentType.toEnum(paymentRequestDTO.paymentType());
-        PaymentProcessor paymentProcessor = findPaymentProcessor(paymentType);
+        PaymentProcessorStrategy paymentProcessorStrategy = findPaymentProcessor(paymentType);
 
-        Payment payment = paymentProcessor.validate(paymentRequestDTO);
+        Payment payment = paymentProcessorStrategy.validate(paymentRequestDTO);
         payment.setPaymentType(paymentType);
         payment.setAmount(paymentRequestDTO.amount());
         payment.setDebtOrIban(paymentRequestDTO.debtOrIban());
@@ -93,10 +93,10 @@ public class PaymentService {
         if (hoursSinceCreation > 24)
             throw new RequestValidationException("Payment can only be cancelled on the same day it was created.");
 
-        PaymentProcessor paymentProcessor = findPaymentProcessor(payment.getPaymentType());
+        PaymentProcessorStrategy paymentProcessorStrategy = findPaymentProcessor(payment.getPaymentType());
         BigDecimal duration = BigDecimal.valueOf(Duration.between(paymentCreationDateTime, currentDateTime).toHours());
 
-        payment.setCancellationFee(paymentProcessor.calculateCancellationFee(duration));
+        payment.setCancellationFee(paymentProcessorStrategy.calculateCancellationFee(duration));
         payment.setCanceled(true);
         paymentRepository.save(payment);
 
@@ -108,11 +108,11 @@ public class PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Payment with Id: %s does not exist", id)));
     }
 
-    private PaymentProcessor findPaymentProcessor(PaymentType paymentType) {
+    private PaymentProcessorStrategy findPaymentProcessor(PaymentType paymentType) {
         return switch (paymentType) {
-            case PaymentType.TYPE1 -> type1PaymentProcessor;
-            case PaymentType.TYPE2 -> type2PaymentProcessor;
-            default -> type3PaymentProcessor;
+            case PaymentType.TYPE1 -> type1PaymentProcessorStrategy;
+            case PaymentType.TYPE2 -> type2PaymentProcessorStrategy;
+            default -> type3PaymentProcessorStrategy;
         };
     }
 }

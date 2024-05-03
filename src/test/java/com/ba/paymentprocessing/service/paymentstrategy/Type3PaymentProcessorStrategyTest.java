@@ -16,55 +16,55 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class Type2PaymentProcessorTest {
+class Type3PaymentProcessorStrategyTest {
 
     @InjectMocks
-    private Type2PaymentProcessor type2PaymentProcessor;
+    private Type3PaymentProcessorStrategy type3PaymentProcessor;
 
     @Test
     void whenValidate_thenReturnValidatedPayment() {
-        assertThat(type2PaymentProcessor.validate(providePaymentRequestDTO())).isEqualTo(provideValidatedPayment());
+        assertThat(type3PaymentProcessor.validate(providePaymentRequestDTO())).isEqualTo(provideValidatedPayment());
     }
 
     @Test
-    void whenValidatePayment_withNotValidCurrency_thenThrowRequestValidationException() {
-        PaymentRequestDTO requestDTO = provideWrongCurrencyPaymentRequestDTO();
-        assertThrows(RequestValidationException.class, () -> type2PaymentProcessor.validate(requestDTO));
+    void whenValidatePayment_withNoDetails_thenThrowRequestValidationException() {
+        PaymentRequestDTO requestDTO = provideNoBicCodePaymentRequestDTO();
+        assertThrows(RequestValidationException.class, () -> type3PaymentProcessor.validate(requestDTO));
     }
 
     @Test
     void whenCalculatePayment_returnCalculatedBigDecimal() {
-        assertThat(type2PaymentProcessor.calculateCancellationFee(BigDecimal.TEN)).isEqualTo(BigDecimal.valueOf(1.00).setScale(2, RoundingMode.CEILING));
+        assertThat(type3PaymentProcessor.calculateCancellationFee(BigDecimal.TEN)).isEqualTo(BigDecimal.valueOf(1.50).setScale(2, RoundingMode.CEILING));
     }
 
     static Payment provideValidatedPayment() {
         Payment payment = new Payment();
-        payment.setCurrency(Currency.USD);
-        payment.setDetails("Payment for car repair");
+        payment.setCurrency(Currency.EUR);
+        payment.setBicCode("HBUKGB4B");
 
         return payment;
     }
 
     static PaymentRequestDTO providePaymentRequestDTO() {
         return new PaymentRequestDTO(
-                "TYPE1",
-                BigDecimal.TEN,
-                "USD",
-                "IE29 AIBK 9311 5212 3456 78",
-                "IE29 AIBK 9311 5212 3456 78",
-                "Payment for car repair",
-                ""
-        );
-    }
-
-    static PaymentRequestDTO provideWrongCurrencyPaymentRequestDTO() {
-        return new PaymentRequestDTO(
-                "TYPE1",
+                "TYPE3",
                 BigDecimal.TEN,
                 "EUR",
                 "IE29 AIBK 9311 5212 3456 78",
                 "IE29 AIBK 9311 5212 3456 78",
-                "Payment for car repair",
+                "",
+                "HBUKGB4B"
+        );
+    }
+
+    static PaymentRequestDTO provideNoBicCodePaymentRequestDTO() {
+        return new PaymentRequestDTO(
+                "TYPE3",
+                BigDecimal.TEN,
+                "EUR",
+                "IE29 AIBK 9311 5212 3456 78",
+                "IE29 AIBK 9311 5212 3456 78",
+                "",
                 ""
         );
     }

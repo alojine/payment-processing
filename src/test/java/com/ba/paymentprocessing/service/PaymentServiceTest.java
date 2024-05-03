@@ -6,7 +6,7 @@ import com.ba.paymentprocessing.exception.RequestValidationException;
 import com.ba.paymentprocessing.exception.ResourceNotFoundException;
 import com.ba.paymentprocessing.model.Payment;
 import com.ba.paymentprocessing.repository.PaymentRepository;
-import com.ba.paymentprocessing.service.paymentstrategy.PaymentProcessor;
+import com.ba.paymentprocessing.service.paymentstrategy.PaymentProcessorStrategy;
 import com.ba.paymentprocessing.type.Currency;
 import com.ba.paymentprocessing.type.PaymentType;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class PaymentServiceTest {
     private PaymentRepository paymentRepository;
 
     @Mock
-    private PaymentProcessor paymentProcessor;
+    private PaymentProcessorStrategy paymentProcessorStrategy;
 
     @Test
     void getPaymentById_returnPaymentResponseDto() {
@@ -120,7 +120,7 @@ class PaymentServiceTest {
                 ""
         );
 
-        when(paymentProcessor.validate(any())).thenReturn(validatedType1Payment);
+        when(paymentProcessorStrategy.validate(any())).thenReturn(validatedType1Payment);
 
         paymentService.createPayment(paymentRequestDTO);
         verify(paymentRepository, times(1)).save(type1Payment);
@@ -151,7 +151,7 @@ class PaymentServiceTest {
                 ""
         );
 
-        when(paymentProcessor.validate(any())).thenReturn(validatedType2Payment);
+        when(paymentProcessorStrategy.validate(any())).thenReturn(validatedType2Payment);
 
         paymentService.createPayment(paymentRequestDTO);
         verify(paymentRepository, times(1)).save(type2Payment);
@@ -182,7 +182,7 @@ class PaymentServiceTest {
                 "HBUKGB4B - HBUK"
         );
 
-        when(paymentProcessor.validate(any())).thenReturn(validatedType3Payment);
+        when(paymentProcessorStrategy.validate(any())).thenReturn(validatedType3Payment);
 
         paymentService.createPayment(paymentRequestDTO);
         verify(paymentRepository, times(1)).save(type3Payment);
@@ -201,7 +201,7 @@ class PaymentServiceTest {
         paymentWithValidDate.setCreatedAt(timestamp);
 
         when(paymentRepository.findById(any())).thenReturn(Optional.of(paymentWithValidDate));
-        when(paymentProcessor.calculateCancellationFee(any())).thenReturn(BigDecimal.TEN);
+        when(paymentProcessorStrategy.calculateCancellationFee(any())).thenReturn(BigDecimal.TEN);
 
         assertDoesNotThrow(() -> paymentService.cancelPayment(id));
         verify(paymentRepository, times(1)).save(payment);

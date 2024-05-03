@@ -14,8 +14,8 @@ import java.math.RoundingMode;
 
 @Service
 @Qualifier("type1PaymentProcessor")
-public class Type1PaymentProcessor implements PaymentProcessor {
-    private final Logger logger = LoggerFactory.getLogger(Type1PaymentProcessor.class);
+public class Type1PaymentProcessorStrategy implements PaymentProcessorStrategy {
+    private final Logger logger = LoggerFactory.getLogger(Type1PaymentProcessorStrategy.class);
     @Override
     public Payment validate(PaymentRequestDTO paymentRequestDTO) {
         Payment payment = new Payment();
