@@ -2,12 +2,12 @@
 ### A RESTful web service for payment processing build with SpringBoot
 
 ## Solution
-This solution contains a tightly structured payment processing RESTful api, operates by making CRUD operations on
+This solution contains a tightly structured payment processing RESTful API, which operates by making CRUD operations on
 Payment model. The primary focus was crafting clean, maintainable code while leveraging design patterns to facilitate the
 seamless integration of a new payment types:
-* **PaymentService**: This component orchestrates operations related to Payments.
+* **PaymentService**: This component serves operations related to Payments.
 * **PaymentProcessor**: Utilizing the strategy pattern interface, this interface serves as a blueprint for implementing 
-various **PaymentType** strategies.
+new **PaymentType** strategies.
 * **PaymentRequestFilter**: Logs all api requests with **clientIp**, **methodType** and **requestURI**.
 
 ## Requirements
